@@ -7,6 +7,8 @@
   <a href="https://twitter.com/jailtoncruzz" target="_blank">
     <img alt="Twitter: jailtoncruzz" src="https://img.shields.io/twitter/follow/jailtoncruzz.svg?style=social" />
   </a>
+  <a href="https://codeclimate.com/github/jailtoncruz/nlw-spacetime/maintainability"><img src="https://api.codeclimate.com/v1/badges/b3ca0c4ce58c1f65e9ab/maintainability" /></a>
+  <a href="https://codeclimate.com/github/jailtoncruz/nlw-spacetime/test_coverage"><img src="https://api.codeclimate.com/v1/badges/b3ca0c4ce58c1f65e9ab/test_coverage" /></a>
 </p>
 
 > Save your timeline
