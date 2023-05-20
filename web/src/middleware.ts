@@ -4,20 +4,16 @@ const signInURL = `https://github.com/login/oauth/authorize?client_id=${process.
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
-  console.log('Middleaware')
   if (!token) {
-    console.log('Redirect', request.cookies.getAll())
     return NextResponse.redirect(signInURL, {
       headers: {
         'Set-Cookie': `redirectTo=${request.url}; Path=/; HttpOnly; max-age=20`,
       },
     })
   }
-
-  console.log('Next')
   return NextResponse.next()
 }
 
 export const config = {
-  mather: '/memories/:path*',
+  matcher: '/memories/:path*',
 }
