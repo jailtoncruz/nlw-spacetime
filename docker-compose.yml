@@ -10,7 +10,7 @@ services:
           - lb
       local:
     ports:
-      - 80:80
+      - 8082:80
 
   app:
     build: server/.
