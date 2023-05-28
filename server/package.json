@@ -2,9 +2,11 @@
   "name": "spacetime",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
+    "build": "tsc",
     "lint": "eslint src --ext .ts --fix"
   },
   "keywords": [],
@@ -12,7 +14,7 @@
   "license": "ISC",
   "devDependencies": {
     "@rocketseat/eslint-config": "^1.2.0",
-    "@types/node": "^20.1.7",
+    "@types/node": "^20.2.5",
     "dotenv": "^16.0.3",
     "prisma": "^4.14.1",
     "tsx": "^3.12.7",

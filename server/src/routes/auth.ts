@@ -1,7 +1,16 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma'
+
+const userSchema = z.object({
+  id: z.number(),
+  login: z.string(),
+  name: z.string(),
+  avatar_url: z.string().url(),
+})
+
+type UserInfo = z.infer<typeof userSchema>
 
 export async function authRoutes(app: FastifyInstance) {
   app.post('/register', async (request) => {
@@ -10,37 +19,43 @@ export async function authRoutes(app: FastifyInstance) {
     })
 
     const { code } = bodySchema.parse(request.body)
-    const accessTokenResponse = await axios.post(
-      `https://github.com/login/oauth/access_token`,
-      null,
-      {
-        params: {
-          client_id: process.env.GITHUB_CLIENT_ID,
-          client_secret: process.env.GITHUB_CLIENT_SECRET,
-          code,
+    let userInfo: UserInfo | undefined
+
+    try {
+      const accessTokenResponse = await axios.post(
+        `https://github.com/login/oauth/access_token`,
+        null,
+        {
+          params: {
+            client_id: process.env.GITHUB_CLIENT_ID,
+            client_secret: process.env.GITHUB_CLIENT_SECRET,
+            code,
+          },
+          headers: {
+            Accept: 'application/json',
+          },
         },
+      )
+
+      const { access_token } = accessTokenResponse.data
+
+      const userResponse = await axios.get('https://api.github.com/user', {
         headers: {
-          Accept: 'application/json',
+          Authorization: `Bearer ${access_token}`,
         },
-      },
-    )
+      })
 
-    const { access_token } = accessTokenResponse.data
+      userInfo = userSchema.parse(userResponse.data)
+    } catch (_err) {
+      const err = _err as AxiosError
+      console.error({
+        url: err.response?.config.url,
+        data: err.response?.data,
+        cause: err.cause,
+      })
+    }
 
-    const userResponse = await axios.get('https://api.github.com/user', {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    })
-
-    const userSchema = z.object({
-      id: z.number(),
-      login: z.string(),
-      name: z.string(),
-      avatar_url: z.string().url(),
-    })
-
-    const userInfo = userSchema.parse(userResponse.data)
+    if (!userInfo) throw new Error('not found')
 
     let user = await prisma.user.findUnique({
       where: {

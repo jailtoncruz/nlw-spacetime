@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  lb:
+    build: .
+    restart: always
+    networks:
+      public:
+        aliases:
+          - lb
+      local:
+    ports:
+      - 80:80
+
+  app:
+    build: server/.
+    env_file:
+      - server/.env
+    restart: always
+    networks:
+      local:
+        ipv4_address: 172.16.238.10
+        aliases:
+          - backend
+    volumes:
+      - ./uploads:/app/uploads
+
+  web:
+    build: web/.
+    restart: always
+    networks:
+      local:
+        ipv4_address: 172.16.238.11
+
+networks:
+  local:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"
+  public:
